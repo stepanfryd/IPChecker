@@ -36,21 +36,23 @@ namespace IPChecker
 		
 			app.UseEndpoints(endpoints =>
 			{
+				endpoints.MapGet("/", async context =>
+				{
+					await WriteContext(context, GetAddr(context));
+				});
+				
 				endpoints.MapGet("/update", async context =>
 				{
-					
-					var addr = context.Connection.RemoteIpAddress;
-					_lastAddress = new AddressInfo { Time = DateTime.Now, Address6 = addr.MapToIPv6().ToString(), Address4 = addr.MapToIPv4().ToString() };
-
 					using (var db = new IPCheckerContext())
 					{
 						db.Database.ExecuteSqlInterpolated($"DELETE FROM Addresses");
-						db.Addresses.Add(_lastAddress);
+						db.Addresses.Add(_lastAddress = GetAddr(context));
 						db.SaveChanges();
 					}
 
-					await WriteContext(context);
+					await WriteContext(context, _lastAddress);
 				});
+
 				endpoints.MapGet("/get-last-address", async context =>
 				{
 
@@ -58,24 +60,29 @@ namespace IPChecker
 					{
 						using (var db = new IPCheckerContext())
 						{
-							_lastAddress = db.Addresses.FirstOrDefault();
-							if(_lastAddress==null)
+							if((_lastAddress = db.Addresses.FirstOrDefault()) == null)
 							{
 								_lastAddress = new AddressInfo();
 							}
 						}
 					}
 
-					await WriteContext(context);
+					await WriteContext(context, _lastAddress);
 				}
 				);
 			});
 		}
 
-		private async Task WriteContext(HttpContext context)
+		private AddressInfo GetAddr(HttpContext context)
+		{
+			var addr = context.Connection.RemoteIpAddress;
+			return new AddressInfo { Time = DateTime.Now, Address6 = addr.MapToIPv6().ToString(), Address4 = addr.MapToIPv4().ToString() };
+		}
+
+		private async Task WriteContext(HttpContext context, AddressInfo addr)
 		{
 			context.Response.ContentType = "text/json";
-			await context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(_lastAddress));
+			await context.Response.WriteAsync(System.Text.Json.JsonSerializer.Serialize(addr));
 		}
 	}
 }

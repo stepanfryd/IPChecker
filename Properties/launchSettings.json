@@ -18,7 +18,6 @@
     "IPChecker": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "get-last-address",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
