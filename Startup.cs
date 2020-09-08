@@ -79,7 +79,7 @@ namespace IPChecker
 		private AddressInfo GetAddr(HttpContext context)
 		{
 			var addr = context.Connection.RemoteIpAddress;
-			return new AddressInfo { Time = DateTime.Now, Address6 = addr.MapToIPv6().ToString(), Address4 = addr.MapToIPv4().ToString() };
+			return new AddressInfo { Time = DateTime.Now, Address6 = addr.ToString(), Address4 = addr.MapToIPv4().ToString() };
 		}
 
 		private async Task WriteContext(HttpContext context, AddressInfo addr)
