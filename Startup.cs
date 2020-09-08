@@ -2,15 +2,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Data.Sqlite;
 
 using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 
 namespace IPChecker
 {
@@ -33,29 +29,30 @@ namespace IPChecker
 			}
 
 			app.UseRouting();
-		
+
 			app.UseEndpoints(endpoints =>
 			{
 				endpoints.MapGet("/", async context =>
 				{
 					await WriteContext(context, GetAddr(context));
 				});
-				
+
 				endpoints.MapGet("/update", async context =>
 				{
+					/*
 					using (var db = new IPCheckerContext())
 					{
 						db.Database.ExecuteSqlInterpolated($"DELETE FROM Addresses");
 						db.Addresses.Add(_lastAddress = GetAddr(context));
 						db.SaveChanges();
-					}
-
+					}*/
+					_lastAddress = GetAddr(context);
 					await WriteContext(context, _lastAddress);
 				});
 
 				endpoints.MapGet("/get-last-address", async context =>
 				{
-
+					/*
 					if (_lastAddress == null)
 					{
 						using (var db = new IPCheckerContext())
@@ -65,6 +62,12 @@ namespace IPChecker
 								_lastAddress = new AddressInfo();
 							}
 						}
+					}
+					*/
+
+					if (_lastAddress == null)
+					{
+						_lastAddress = new AddressInfo();
 					}
 
 					await WriteContext(context, _lastAddress);
