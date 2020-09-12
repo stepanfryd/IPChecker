@@ -12,5 +12,6 @@ namespace IPChecker
 		public string Address6 { get; set; }
 
 		public string Address4 { get; set; }
+		public string Version { get; set; }
 	}
 }
