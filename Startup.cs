@@ -75,7 +75,7 @@ namespace IPChecker
 
 					if (_lastAddress == null)
 					{
-						_lastAddress = new AddressInfo();
+						_lastAddress = new AddressInfo { Version = _version.ToString() };
 					}
 
 					await WriteContext(context, _lastAddress);
